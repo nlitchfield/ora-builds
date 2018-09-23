@@ -1,0 +1,101 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+VAGRANTFILE_API_VERSION = '2'.freeze
+
+# Read YAML file with box details
+servers = YAML.load_file('servers.yaml')
+
+# Variables
+var_box            = 'bento/centos-7.5'  # 'bento/oracle-6.9'
+var_vm_name        = 'siha.lab.local'
+var_mem_size       = 10240  # More would be better.
+var_cpus           = 2
+var_non_rotational = 'off' # SSD
+u01_disk           = 'd:\vms\siha.lab.local\u01.vdi'
+inv_disk           = 'd:\vms\siha.lab.local\inv.vdi'
+diag_disk          = 'd:\vms\siha.lab.local\diag.vdi'
+data_disk          = 'D:\vms\asm\standalone\data.vdi'
+fra_disk           = 'D:\vms\asm\standalone\fra.vdi'
+ctl_disk1          = 'D:\vms\asm\standalone\ctllog1.vdi'
+ctl_disk2          = 'D:\vms\asm\standalone\ctllog2.vdi'
+
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  #servers.each do |name, server|
+  
+  #  var_non_rotational = server['non_rotational']
+  #  u01_disk           = server['u01_disk']
+  #  inv_disk           = server['inv_disk']
+  #  diag_disk          = server['diag_disk']
+  #  data_disk          = server['data_disk']
+  #  fra_disk           = server['fra_disk']
+  #  ctl_disk1          = server['ctllog1']
+  #  ctl_disk2          = server['ctllog2']
+    
+    config.vm.box = var_box
+
+    config.vm.network "forwarded_port", guest: 8080, host: 8080
+    config.vm.network "forwarded_port", guest: 8443, host: 8443
+    config.vm.network "forwarded_port", guest: 1521, host: 1521
+    config.vm.network "forwarded_port", guest: 5500, host: 5500
+
+    config.vm.provider "virtualbox" do |vb|
+      vb.memory = 10240
+      vb.cpus   = 2
+      vb.name   = 'siha.lab.local'
+
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', '0', '--nonrotational', var_non_rotational]
+
+      unless File.exist?(u01_disk)
+        vb.customize ['createhd', '--filename', u01_disk, '--size', 100 * 1024]
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', u01_disk, '--nonrotational', var_non_rotational]
+
+      unless File.exist?(inv_disk)
+        vb.customize ['createhd', '--filename', inv_disk, '--size', 10 * 1024]
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', inv_disk, '--nonrotational', var_non_rotational]
+
+      unless File.exist?(diag_disk)
+        vb.customize ['createhd', '--filename', diag_disk, '--size', 100 * 1024]
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 3, '--device', 0, '--type', 'hdd', '--medium', diag_disk, '--nonrotational', var_non_rotational]
+
+      unless File.exist?(data_disk)
+        vb.customize ['createhd', '--filename', data_disk, '--size', 50 * 1024, '--format', 'VDI', '--variant', 'Fixed']
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 4, '--device', 0, '--type', 'hdd', '--medium', data_disk, '--nonrotational', var_non_rotational]
+      #vb.customize ['modifyhd ', :id, data_disk, '--type', 'shareable']
+
+      unless File.exist?(fra_disk)
+        vb.customize ['createhd', '--filename', fra_disk, '--size', 20 * 1024, '--format', 'VDI', '--variant', 'Fixed']
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 5, '--device', 0, '--type', 'hdd', '--medium', fra_disk,  '--nonrotational', var_non_rotational]
+      #vb.customize ['modifyhd ', :id, data_disk, '--type', 'shareable']
+    
+      unless File.exist?(ctl_disk1)
+        vb.customize ['createhd', '--filename', ctl_disk1, '--size', 20 * 1024, '--format', 'VDI', '--variant', 'Fixed']
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 6, '--device', 0, '--type', 'hdd', '--medium', ctl_disk1,  '--nonrotational', var_non_rotational]
+      #vb.customize ['modifyhd ', :id, data_disk, '--type', 'shareable']
+ 
+      unless File.exist?(ctl_disk2)
+        vb.customize ['createhd', '--filename', ctl_disk2, '--size', 20 * 1024, '--format', 'VDI', '--variant', 'Fixed']
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 7, '--device', 0, '--type', 'hdd', '--medium', ctl_disk2,  '--nonrotational', var_non_rotational]
+      #vb.customize ['modifyhd ', :id, data_disk, '--type', 'shareable']
+    end
+
+    config.vm.provision "shell", inline: <<-SHELL
+      sh /vagrant/scripts/setup.sh
+    SHELL
+    
+  end

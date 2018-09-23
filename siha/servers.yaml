@@ -1,0 +1,13 @@
+---
+siha:
+  cpucount:         2
+  ram:              10240
+  name:             siha.lab.local
+  non_rotational:   off
+  u01_disk:         'd:\vms\siha.lab.local\u01.vdi'
+  inv_disk:         'd:\vms\siha.lab.local\inv.vdi'
+  diag_disk:        'd:|vms\siha.lab.local\diag.vdi'
+  data_disk:        'D:\vms\asm\standalone\data.vdi'
+  fra_disk:         'D:\vms\asm\standalone\fra.vdi'
+  ctl_disk1:        'D:\vms\asm\standalone\ctllog1.vdi'
+  ctl_disk2:        'D:\vms\asm\standalone\ctllog2.vdi'
