@@ -1,0 +1,5 @@
+---
+xe:
+  cpucount:         2
+  ram:              8192
+  name:             'xe.lab.local'

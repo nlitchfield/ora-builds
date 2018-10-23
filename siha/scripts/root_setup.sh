@@ -10,6 +10,7 @@ yum -y install yum-utils zip unzip
 yum -y update
 # 18c prereq works on rhel like distros
 yum -y localinstall http://yum.oracle.com/repo/OracleLinux/OL7/latest/x86_64/getPackage/oracle-database-preinstall-18c-1.0-1.el7.x86_64.rpm
+yum -y localinstall /vagrant/software/oracle-database-xe-18c-1.0-1.x86_64.rpm
 
 }
 
@@ -231,55 +232,55 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-deploySoftwareImages
-if [[ $? -ne 0 ]]; then 
-  echo "Failed to copy necessary files"
-  exit 1
-fi
+#deploySoftwareImages
+#if [[ $? -ne 0 ]]; then 
+#  echo "Failed to copy necessary files"
+#  exit 1
+#fi
 
-extractHome
-if [[ $? -ne 0 ]]; then 
-  echo "Failed to extract Gold Image"
-  exit 1
-fi
+#extractHome
+#if [[ $? -ne 0 ]]; then 
+#  echo "Failed to extract Gold Image"
+#  exit 1
+#fi
 
-installASMSupport
-if [[ $? -ne 0 ]]; then 
-  echo "Failed to add packages necessary for ASM"
-  exit 1
-fi
+#installASMSupport
+#if [[ $? -ne 0 ]]; then 
+#  echo "Failed to add packages necessary for ASM"
+#  exit 1
+#fi
 
-addASMDisks
-if [[ $? -ne 0 ]]; then 
-  echo "Failed to create ASM disks"
-  exit 1
-fi
+#addASMDisks
+#if [[ $? -ne 0 ]]; then 
+#  echo "Failed to create ASM disks"
+#  exit 1
+#fi
 
-printStorageConfig
+#printStorageConfig
 
-setupGIHome
+#setupGIHome
 #TODO Handle Error codes from gridSetup.sh - 6 is optional prereqs failed. 
-ret=$?
-if [[ $ret -ne 0 ]]; then 
-  echo "Warning: gridSetup.sh failed to setup the GI Home"
-  echo "Error was : $ret "
-  #exit 1
-fi
+#ret=$?
+#if [[ $ret -ne 0 ]]; then 
+#  echo "Warning: gridSetup.sh failed to setup the GI Home"
+#  echo "Error was : $ret "
+#  #exit 1
+#fi
 
-setupInventory
-if [[ $? -ne 0 ]]; then 
-  echo "Failed to create inventory"
-  exit 1
-fi
+#setupInventory
+#if [[ $? -ne 0 ]]; then 
+#  echo "Failed to create inventory"
+#  exit 1
+#fi
 
-runRootScript
-if [[ $? -ne 0 ]]; then 
-  echo "Root Script execution failed"
-  exit 1
-fi
+#runRootScript
+#if [[ $? -ne 0 ]]; then 
+#  echo "Root Script execution failed"
+#  exit 1
+#fi
 
-configureGIHome
-if [[ $? -ne 0 ]]; then 
-  echo "configuration tools failed"
-  exit 1
-fi
+#configureGIHome
+#if [[ $? -ne 0 ]]; then 
+#  echo "configuration tools failed"
+#  exit 1
+#fi
